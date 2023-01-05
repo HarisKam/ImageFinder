@@ -1,0 +1,70 @@
+#content {
+    margin-top: 8%;
+    margin-left: 5%;
+}
+
+#banner {
+    z-index: 10 ;
+    display: flex;
+    position: fixed;
+    left: 0%;
+    top: 0%;
+    width: 100%; 
+    height: 10%;
+    text-align: center;
+    align-items: center;
+    vertical-align: center;
+    align-content: center;
+    color:black;
+    background-color: white;
+    border-color:gray;
+    border-style: solid;
+    border-width: 2px;
+}
+
+img {
+    border: 1px solid;
+    border-color: black;
+}
+
+#banner-title {
+    font-size: 35px;
+    font-family: Courier, monospace;
+    font-weight: bold;
+    width:auto;
+    margin-left: 5%;
+
+}
+
+#error-text{
+    font-family: Courier, monospace;
+    font-size: 14px;
+    color: red;
+    margin-bottom: 2px;
+}
+
+#prompt-details {
+    font-size: 20px;
+    font-family: Courier, monospace;
+    width:auto;
+    height: 80%;
+    margin-left: 50%;
+    border-width: 2px;
+    background-color: white;
+}
+
+.desc {
+    font-size: 25px;
+    font-family: Courier, monospace;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.misctext {
+    font-size: 16px;
+    font-weight:600;
+    font-family: Courier, monospace;
+    margin-bottom: 15px;
+    line-height: 15px;
+
+}

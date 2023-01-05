@@ -1,0 +1,127 @@
+
+<html>
+<head>
+	<link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+	<div id = "banner">
+		<div id = "banner-title">
+			Image Finder
+		</div>
+		<button id = "prompt-details" onclick="window.location.href='index2.html';">Prompt Details</button>
+	</div>
+	
+	<div id="content">
+		<div class="input">
+			<div class="desc">Description</div>
+			<div class="misctext">Image Finder prompts the user for a site URL, then crawls the site and related links for images.
+				<br><br>	
+				The images are then displayed and sorted by the URL they were scraped from.
+				<br><br>
+				By default, the max number of sites it will crawl is limited to 25. 
+				<br><br>
+				You may change this by changing the MAX_CRAWLS variable in the ImageCrawler.java class.
+			</div>
+			<div class="desc">How to Use Image Finder</div>
+			<div class="misctext">Enter a valid URL to scrape images from.
+				<br><br>
+				The input URL must begin with "http://" or "https://" 
+				<br><br>
+				Example: http://google.com/
+				<br><br>
+				Press the Submit Button once you have entered a URL.
+			</div>
+			<div id="error-text"></div>
+			<form>
+				<input type="text" name="url">
+			</form>
+			<button id="submit-button" class="submit" type="button">Submit!</button>
+		</div>
+		<div class="output">
+			<ul class="results">
+			</ul>
+			<div id="loading" class="misctext"></div>
+		</div>
+	</div>
+
+	<script>
+		var resultList = document.querySelector('ul.results');
+		var urlInput = document.querySelector('input[name=url]')
+
+		apiCallBack = function(xhr, callback) {
+			if (xhr.readyState == XMLHttpRequest.DONE) {
+				if (xhr.status != 200) {
+					let message = xhr.status + ":" + xhr.statusText + ":"
+							+ xhr.responseText;
+					alert(message);
+					throw 'API call returned bad code: ' + xhr.status;
+				}
+				let response = xhr.responseText ? JSON.parse(xhr.responseText)
+						: null;
+				if (callback) {
+					callback(response);
+				}
+			}
+		}
+
+		updateList = function(response) {
+			resultList.innerHTML = '';
+			document.getElementById("submit-button").removeAttribute("disabled");
+			document.getElementById("loading").innerText = "";
+			if (response.length == 0) {
+				let error = document.getElementById("error-text");
+				error.innerText = "No Images Found";
+			} else if (response.length == 1) {
+				if (response[0].includes("Error Detected: "))  {
+					let error = document.getElementById("error-text");
+					error.innerText = response[0];
+				} else {
+					document.getElementById("error-text").innerText = "No Images Found On: " + response[0];
+				}
+			} else {
+				var crawlCount = document.createElement("p");
+				var imageCount = document.createElement("p");
+				crawlCount.innerText = "Number of Links Crawled: " + response[0];
+				crawlCount.classList.add("misctext");
+				imageCount.innerText = "Number of Images Scraped: " + response[1];
+				imageCount.classList.add("misctext");
+				document.querySelector('ul.results').appendChild(crawlCount);
+				document.querySelector('ul.results').appendChild(imageCount);
+				for (var i = 2; i < response.length; i++) {
+
+					if (!response[i].includes("^")) {
+						var img = document.createElement("img");
+						img.width = 200;
+						img.height = 200;
+						img.src = response[i];
+						document.querySelector('ul.results').appendChild(img);
+					} else {
+						var linkGroup = document.createElement("p");
+						linkGroup.classList.add("misctext");
+						linkGroup.innerText = "Images from URL: " + response[i].substring(1);
+						document.querySelector('ul.results').appendChild(linkGroup);
+					}
+				}
+			}
+		}
+
+		makeApiCall = function(url, method, obj, callback) {
+			let xhr = new XMLHttpRequest();
+			xhr.open(method, url);
+			xhr.onreadystatechange = apiCallBack.bind(null, xhr, callback);
+			xhr.send(obj ? obj instanceof FormData || obj.constructor == String ? obj : JSON.stringify(obj) : null);
+		}
+
+		document.querySelector('button.submit').addEventListener("click", function(event) {
+			event.preventDefault();
+			document.getElementById("submit-button").disabled = "true";
+			resultList.innerHTML = '';
+			document.getElementById("loading").innerText = 'Waiting for Results...';
+			document.getElementById("error-text").innerText = "";
+			makeApiCall('/main?url=' + urlInput.value, 'POST', null, updateList);
+		});
+	</script>
+</body>
+
+</html>
